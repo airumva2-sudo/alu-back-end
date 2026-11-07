@@ -9,29 +9,28 @@ import sys
 if __name__ == "__main__":
     employee_id = int(sys.argv[1])
 
-    # Fetch employee information
     user_url = "https://jsonplaceholder.typicode.com/users/{}".format(
         employee_id
     )
     user_response = requests.get(user_url)
     user_data = user_response.json()
-
     username = user_data.get("username")
 
-    # Fetch employee TODO tasks
-    todos_url = "https://jsonplaceholder.typicode.com/todos?userId={}".format(
-        employee_id
-    )
-    todos_response = requests.get(todos_url)
-    todos_data = todos_response.json()
+    tasks_url = "https://jsonplaceholder.typicode.com/todos"
+    tasks_response = requests.get(tasks_url)
+    tasks_data = tasks_response.json()
 
-    # Export tasks to CSV
+    employee_tasks = [
+        task for task in tasks_data
+        if task.get("userId") == employee_id
+    ]
+
     filename = "{}.csv".format(employee_id)
 
     with open(filename, mode="w", newline="", encoding="utf-8") as csv_file:
         writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
 
-        for task in todos_data:
+        for task in employee_tasks:
             writer.writerow([
                 employee_id,
                 username,
