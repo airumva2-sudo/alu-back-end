@@ -1,23 +1,23 @@
 #!/usr/bin/python3
-
 import requests
 import sys
 
 if __name__ == "__main__":
     employee_id = int(sys.argv[1])
 
-    # Get employee information
+    # Fetch employee information
     user_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
     user_response = requests.get(user_url)
     user_data = user_response.json()
+
     employee_name = user_data.get("name")
 
-    # Get employee TODO tasks
+    # Fetch employee TODO tasks
     todos_url = "https://jsonplaceholder.typicode.com/todos"
     todos_response = requests.get(todos_url)
     todos_data = todos_response.json()
 
-    # Filter employee tasks
+    # Filter tasks belonging to the employee
     employee_tasks = [
         task for task in todos_data
         if task.get("userId") == employee_id
@@ -36,7 +36,6 @@ if __name__ == "__main__":
         len(employee_tasks)
     ))
 
-    # Display completed task titles
+    # Display titles of completed tasks
     for task in completed_tasks:
         print("\t {}".format(task.get("title")))
-
