@@ -1,41 +1,40 @@
 #!/usr/bin/python3
+"""Gather data from an API and display an employee's TODO list progress."""
+
 import requests
 import sys
+
 
 if __name__ == "__main__":
     employee_id = int(sys.argv[1])
 
-    # Fetch employee information
-    user_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
-    user_response = requests.get(user_url)
-    user_data = user_response.json()
+    employee_url = "https://jsonplaceholder.typicode.com/users/{}".format(
+        employee_id
+    )
+    employee_response = requests.get(employee_url)
+    employee_data = employee_response.json()
+    employee_name = employee_data.get("name")
 
-    employee_name = user_data.get("name")
-
-    # Fetch employee TODO tasks
-    todos_url = "https://jsonplaceholder.typicode.com/todos"
+    todos_url = "https://jsonplaceholder.typicode.com/todos?userId={}".format(
+        employee_id
+    )
     todos_response = requests.get(todos_url)
     todos_data = todos_response.json()
 
-    # Filter tasks belonging to the employee
-    employee_tasks = [
-        task for task in todos_data
-        if task.get("userId") == employee_id
-    ]
-
-    # Get completed tasks
+    total_tasks = len(todos_data)
     completed_tasks = [
-        task for task in employee_tasks
-        if task.get("completed") is True
+        task for task in todos_data if task.get("completed")
     ]
 
-    # Display employee progress
-    print("Employee {} is done with tasks({}/{}):".format(
-        employee_name,
-        len(completed_tasks),
-        len(employee_tasks)
-    ))
+    number_of_done_tasks = len(completed_tasks)
 
-    # Display titles of completed tasks
+    print(
+        "Employee {} is done with tasks({}/{}):".format(
+            employee_name,
+            number_of_done_tasks,
+            total_tasks
+        )
+    )
+
     for task in completed_tasks:
         print("\t {}".format(task.get("title")))
